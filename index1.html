@@ -382,7 +382,6 @@
                     </div>
                     <label for="clienteNome" class="instrucao" style="display:block;margin-top:18px;">Seus dados para contato</label>
                     <input id="clienteNome" class="campo-cliente" type="text" maxlength="80" placeholder="Nome completo" autocomplete="name">
-                    <input id="clienteTelefone" class="campo-cliente" type="tel" maxlength="20" placeholder="WhatsApp com DDD" autocomplete="tel">
                     <textarea id="clienteObs" class="campo-cliente" maxlength="300" rows="2" placeholder="Observação (opcional)"></textarea>
                     <p class="notice-box">Seu pedido será registrado como solicitação. Aguarde a confirmação da barbearia.</p>
                 </div>
@@ -479,7 +478,7 @@
 
         let dbServicos = [];
         let dbHoras = [];
-        let agendamento = { servicoObj: null, dataTexto: null, dataISO: null, horaTexto: null, clienteNome: "", clienteTelefone: "", observacao: "" };
+        let agendamento = { servicoObj: null, dataTexto: null, dataISO: null, horaTexto: null, clienteNome: "", observacao: "" };
         let passoAtual = 1;
 
         const FirebaseDatabaseAPI = {
@@ -573,7 +572,7 @@
         function fecharModalAtendimento() { document.getElementById('modalAgendamento').classList.remove('ativo'); document.body.style.overflow = 'auto'; }
         
         function resetarModalCliente() {
-            passoAtual = 1; agendamento = { servicoObj: null, dataTexto: null, dataISO: null, horaTexto: null, clienteNome: "", clienteTelefone: "", observacao: "" };
+            passoAtual = 1; agendamento = { servicoObj: null, dataTexto: null, dataISO: null, horaTexto: null, clienteNome: "", observacao: "" };
             document.querySelectorAll('.item-servico-modal').forEach(e => e.classList.remove('selecionado'));
             document.querySelectorAll('.btn-hora').forEach(e => e.classList.remove('selecionado'));
             atualizarUIModal();
@@ -650,13 +649,12 @@
 
         async function enviarWhatsApp() {
             const nome = document.getElementById('clienteNome').value.trim();
-            const telefone = document.getElementById('clienteTelefone').value.replace(/[^0-9+]/g,'').trim();
             const observacao = document.getElementById('clienteObs').value.trim();
             if (!agendamento.servicoObj || !agendamento.dataISO || !agendamento.horaTexto) { alert("Selecione o serviço, a data e o horário."); return; }
-            if (nome.length < 2 || telefone.replace(/\D/g,'').length < 10) { alert("Informe seu nome e um WhatsApp válido com DDD."); return; }
+            if (nome.length < 2) { alert("Informe seu nome completo."); return; }
             const servico=agendamento.servicoObj, valor=Number(servico.preco);
-            const dados={servicoId:Number(servico.id),servico:String(servico.nome),data:agendamento.dataTexto,dataISO:agendamento.dataISO,horario:agendamento.horaTexto,valor,clienteNome:nome,clienteTelefone:telefone,observacao};
-            const texto=`Olá! Quero solicitar um agendamento no Imperium Barbershop:\n✂️ Serviço: ${dados.servico}\n📅 Data: ${dados.data}\n⏰ Horário: ${dados.horario}\n💰 Valor: R$ ${valor.toFixed(2).replace('.',',')}\n👤 Cliente: ${nome}\n📱 WhatsApp: ${telefone}${observacao?`\n📝 Observação: ${observacao}`:''}\n\nAguardo a confirmação.`;
+            const dados={servicoId:Number(servico.id),servico:String(servico.nome),data:agendamento.dataTexto,dataISO:agendamento.dataISO,horario:agendamento.horaTexto,valor,clienteNome:nome,observacao};
+            const texto=`Olá! Quero solicitar um agendamento no Imperium Barbershop:\n✂️ Serviço: ${dados.servico}\n📅 Data: ${dados.data}\n⏰ Horário: ${dados.horario}\n💰 Valor: R$ ${valor.toFixed(2).replace('.',',')}\n👤 Cliente: ${nome}${observacao?`\n📝 Observação: ${observacao}`:''}\n\nAguardo a confirmação.`;
             const numeroWhats=String(NUMERO_WHATS||'').replace(/\D/g,'');
             if(!numeroWhats){alert('O número do WhatsApp da barbearia não está configurado.');return;}
             const destino=`https://wa.me/${numeroWhats}?text=${encodeURIComponent(texto)}`;
@@ -909,7 +907,7 @@
                     const card=document.createElement('article'); card.className='admin-booking';
                     const info=document.createElement('div');
                     const safe=(v)=>String(v??'—');
-                    info.innerHTML=`<strong style="color:#d4af37">${safe(p.clienteNome)}</strong><p>${safe(p.servico)} · ${safe(p.data)} · ${safe(p.horario)}</p><p>${safe(p.clienteTelefone)} · R$ ${Number(p.valor||0).toFixed(2).replace('.',',')}</p><p>Situação: <b>${safe(p.status)}</b>${p.observacao?`<br>Obs.: ${safe(p.observacao)}`:''}</p>`;
+                    info.innerHTML=`<strong style="color:#d4af37">${safe(p.clienteNome)}</strong><p>${safe(p.servico)} · ${safe(p.data)} · ${safe(p.horario)}</p><p>R$ ${Number(p.valor||0).toFixed(2).replace('.',',')}</p><p>Situação: <b>${safe(p.status)}</b>${p.observacao?`<br>Obs.: ${safe(p.observacao)}`:''}</p>`;
                     const controles=document.createElement('div');
                     const select=document.createElement('select');
                     ['solicitado','confirmado','concluido','cancelado'].forEach(st=>{const op=document.createElement('option');op.value=st;op.textContent=st[0].toUpperCase()+st.slice(1);if(p.status===st)op.selected=true;select.appendChild(op);});
