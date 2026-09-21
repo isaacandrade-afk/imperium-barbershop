@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Imperium Barbershop | Sistema Completo</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ==========================================================================
+           1. VARIÁVEIS GLOBAIS E RESET
+           ========================================================================== */
+        :root {
+            --cor-bg-primaria: #070707;
+            --cor-bg-secundaria: #111111;
+            --cor-bg-terciaria: #1a1a1a;
+            --cor-bg-admin: #0d1b2a;
+            
+            --cor-destaque: #d4af37;
+            --cor-destaque-hover: #f1c40f;
+            --cor-texto-claro: #ffffff;
+            --cor-texto-mutado: #999999;
+            --cor-texto-escuro: #111111;
+            
+            --cor-borda: #2a2a2a;
+            --cor-borda-admin: #1b263b;
+            --cor-sucesso: #2ecc71;
+            --cor-perigo: #e74c3c;
+            
+            --fonte-texto: 'Montserrat', sans-serif;
+            --fonte-titulo: 'Playfair Display', serif;
+            
+            --transicao-rapida: all 0.2s ease;
+            --transicao-suave: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --sombra-card: 0 10px 30px rgba(0, 0, 0, 0.6);
+            --sombra-neon: 0 0 15px rgba(212, 175, 55, 0.3);
+        }
+
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html { scroll-behavior: smooth; font-size: 16px; }
+
+        body {
+            background-color: var(--cor-bg-primaria);
+            color: var(--cor-texto-claro);
+            font-family: var(--fonte-texto);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--cor-bg-primaria); }
+        ::-webkit-scrollbar-thumb { background: var(--cor-borda); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--cor-destaque); }
+
+        h1, h2, h3, h4, h5, h6 { font-family: var(--fonte-titulo); font-weight: 700; line-height: 1.2; }
+        .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        
+        .titulo-secao { text-align: center; font-size: 2.8rem; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 2px; color: var(--cor-texto-claro); }
+        .titulo-secao span { color: var(--cor-destaque); font-style: italic; }
+        .subtitulo-secao { text-align: center; color: var(--cor-texto-mutado); font-size: 1.1rem; max-width: 600px; margin: 0 auto 4rem auto; font-family: var(--fonte-texto); }
+
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+            padding: 14px 32px; border: none; border-radius: 4px; font-family: var(--fonte-texto);
+            font-weight: 700; font-size: 1rem; cursor: pointer; text-decoration: none;
+            text-transform: uppercase; letter-spacing: 1px; transition: var(--transicao-suave);
+        }
+        .btn-primario { background-color: var(--cor-destaque); color: var(--cor-texto-escuro); }
+        .btn-primario:hover { background-color: var(--cor-destaque-hover); transform: translateY(-3px); box-shadow: var(--sombra-neon); }
+        .btn-secundario { background-color: transparent; color: var(--cor-destaque); border: 1px solid var(--cor-destaque); }
+        .btn-secundario:hover { background-color: rgba(212, 175, 55, 0.1); }
+
+        /* ==========================================================================
+           2. CABEÇALHO E HERO
+           ========================================================================== */
+        header {
+            position: fixed; top: 0; left: 0; width: 100%; background-color: rgba(7, 7, 7, 0.95);
+            backdrop-filter: blur(12px); z-index: 100; border-bottom: 1px solid var(--cor-borda);
+            padding: 15px 0; transition: var(--transicao-suave);
+        }
+        .header-content { display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 15px; text-decoration: none; }
+        .logo-icon svg { width: 45px; height: 45px; fill: var(--cor-destaque); }
+        .logo-text-main { font-family: var(--fonte-titulo); font-size: 1.6rem; color: var(--cor-texto-claro); text-transform: uppercase; letter-spacing: 1px; }
+        .logo-text-sub { font-family: var(--fonte-texto); font-size: 0.75rem; color: var(--cor-destaque); letter-spacing: 4px; font-weight: 500; display: block; }
+        .nav-links { display: flex; gap: 30px; list-style: none; }
+        .nav-links a { color: var(--cor-texto-claro); text-decoration: none; font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; position: relative; padding: 5px 0; transition: var(--transicao-rapida); }
+        .nav-links a:hover { color: var(--cor-destaque); }
+
+        .hero {
+            height: 100vh; min-height: 600px; display: flex; align-items: center; position: relative;
+            background: linear-gradient(135deg, rgba(7,7,7,0.95) 0%, rgba(7,7,7,0.6) 50%, rgba(7,7,7,0.2) 100%), url('https://images.unsplash.com/photo-1593702275687-f8b402bf1fb5?auto=format&fit=crop&q=80&w=1920') center/cover no-repeat;
+            background-attachment: fixed; padding-top: 80px;
+        }
+        .hero-content { max-width: 700px; animation: slideUpFade 1s ease-out; position: relative; z-index: 2; }
+        .hero-tag { display: inline-block; background-color: rgba(212, 175, 55, 0.1); color: var(--cor-destaque); padding: 6px 15px; border-radius: 50px; border: 1px solid rgba(212, 175, 55, 0.3); font-size: 0.85rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; }
+        .hero-title { font-size: 4.5rem; line-height: 1.1; margin-bottom: 25px; }
+        .hero-title span { color: var(--cor-destaque); font-style: italic; }
+        .hero-desc { font-size: 1.2rem; color: var(--cor-texto-mutado); margin-bottom: 40px; max-width: 600px; line-height: 1.8; }
+        .hero-buttons { display: flex; gap: 20px; }
+        @keyframes slideUpFade { 0% { opacity: 0; transform: translateY(40px); } 100% { opacity: 1; transform: translateY(0); } }
+
+        /* ==========================================================================
+           3. SERVIÇOS E CATÁLOGO
+           ========================================================================== */
+        .secao-padrao { padding: 120px 0; }
+        .bg-secundario { background-color: var(--cor-bg-secundaria); }
+        .grid-servicos { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+        .card-servico {
+            background-color: var(--cor-bg-terciaria); border: 1px solid var(--cor-borda); border-radius: 8px;
+            padding: 40px 30px; text-align: center; transition: var(--transicao-suave); position: relative;
+            overflow: hidden; display: flex; flex-direction: column; height: 100%;
+        }
+        .card-servico:hover { transform: translateY(-10px); border-color: var(--cor-destaque); box-shadow: var(--sombra-card); }
+        .icone-servico-wrapper {
+            width: 80px; height: 80px; margin: 0 auto 25px; background-color: rgba(212, 175, 55, 0.05);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(212, 175, 55, 0.2); transition: var(--transicao-suave);
+        }
+        .icone-servico-wrapper svg { width: 40px; height: 40px; fill: var(--cor-destaque); }
+        .card-servico:hover .icone-servico-wrapper { background-color: var(--cor-destaque); }
+        .card-servico:hover .icone-servico-wrapper svg { fill: var(--cor-bg-primaria); }
+        .card-servico h3 { font-size: 1.5rem; margin-bottom: 15px; font-family: var(--fonte-titulo); }
+        .card-servico p { color: var(--cor-texto-mutado); font-size: 0.95rem; margin-bottom: 30px; flex-grow: 1; }
+        .preco-box { background-color: var(--cor-bg-primaria); padding: 15px; border-radius: 6px; border: 1px dashed var(--cor-borda); }
+        .preco-box span { display: block; font-size: 0.8rem; color: var(--cor-texto-mutado); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        .preco-valor { font-size: 1.8rem; font-weight: 700; color: var(--cor-destaque); font-family: var(--fonte-titulo); }
+
+        .catalogo-empty-state { text-align: center; padding: 60px 20px; background: var(--cor-bg-terciaria); border-radius: 8px; border: 1px dashed var(--cor-borda); }
+        .catalogo-empty-state h3 { color: var(--cor-destaque); margin-bottom: 10px; }
+        .catalogo-empty-state p { color: var(--cor-texto-mutado); }
+        .catalogo-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:22px; }
+        .corte-card { background:var(--cor-bg-terciaria); border:1px solid var(--cor-borda); border-radius:8px; overflow:hidden; }
+        .corte-visual { min-height:145px; display:flex; align-items:center; justify-content:center; background:radial-gradient(circle at 50% 35%,#454545,#141414 68%); color:var(--cor-destaque); font-size:2.8rem; }
+        .corte-card div:last-child { padding:18px; }
+        .corte-card h3 { margin-bottom:8px; }
+        .corte-card p { color:var(--cor-texto-mutado); font-size:.9rem; }
+        .admin-actions { display:flex; flex-wrap:wrap; gap:10px; margin:14px 0 24px; }
+        .admin-action-btn { padding:9px 13px; border:1px solid #d4af37; color:#d4af37; background:#101820; border-radius:4px; cursor:pointer; }
+        .admin-list { display:grid; gap:10px; }
+        .admin-booking { border:1px solid #304050; border-radius:6px; padding:14px; background:#101820; display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px; }
+        .admin-booking p { color:#c5cbd3; font-size:.88rem; margin:3px 0; }
+        .admin-booking select { padding:8px; background:#0d1b2a; color:#fff; border:1px solid #526477; border-radius:4px; }
+        .campo-cliente { width:100%; padding:13px; margin-top:12px; background:#151515; border:1px solid var(--cor-borda); border-radius:4px; color:#fff; font:inherit; }
+        .notice-box { border:1px solid var(--cor-destaque); padding:12px; margin:14px 0; color:#ddd; border-radius:5px; font-size:.88rem; }
+        @media(max-width:600px){ .titulo-secao{font-size:2rem;} .hero-title{font-size:2.8rem;} .hero-buttons{flex-direction:column;align-items:stretch;} .admin-booking{display:block;} }
+
+        /* ==========================================================================
+           4. RODAPÉ E MODAIS
+           ========================================================================== */
+        footer { background-color: #030303; padding: 80px 0 20px 0; border-top: 1px solid var(--cor-borda); }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 60px; }
+        .redes-sociais { display: flex; gap: 15px; margin-top: 20px; }
+        .redes-sociais a { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background-color: var(--cor-bg-terciaria); border: 1px solid var(--cor-borda); transition: var(--transicao-rapida); }
+        .redes-sociais a svg { width: 18px; height: 18px; fill: var(--cor-texto-claro); transition: var(--transicao-rapida); }
+        .redes-sociais a:hover { background-color: var(--cor-destaque); border-color: var(--cor-destaque); }
+        .redes-sociais a:hover svg { fill: var(--cor-bg-primaria); }
+        .footer-titulo { font-family: var(--fonte-titulo); font-size: 1.2rem; color: var(--cor-texto-claro); margin-bottom: 25px; position: relative; padding-bottom: 10px; }
+        .footer-titulo::after { content: ''; position: absolute; left: 0; bottom: 0; width: 40px; height: 2px; background-color: var(--cor-destaque); }
+        .footer-links { list-style: none; }
+        .footer-links li { margin-bottom: 12px; color: var(--cor-texto-mutado); }
+        .footer-links a { color: var(--cor-texto-mutado); text-decoration: none; transition: var(--transicao-rapida); }
+        .footer-links a:hover { color: var(--cor-destaque); }
+        .footer-bottom { border-top: 1px solid var(--cor-borda); padding-top: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .link-admin { color: var(--cor-destaque); text-decoration: none; font-size: 0.85rem; opacity: 0.5; transition: var(--transicao-rapida); }
+        .link-admin:hover { opacity: 1; }
+
+        /* MODAIS */
+        .modal-overlay, .admin-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: var(--transicao-suave); }
+        .modal-overlay.ativo, .admin-overlay.ativo { opacity: 1; visibility: visible; }
+        .modal-box, .admin-box { background-color: var(--cor-bg-secundaria); width: 100%; max-width: 650px; border-radius: 12px; border: 1px solid var(--cor-borda); transform: translateY(30px) scale(0.95); transition: var(--transicao-suave); display: flex; flex-direction: column; max-height: 90vh; }
+        .admin-box { max-width: 800px; background-color: var(--cor-bg-admin); border-color: var(--cor-borda-admin); }
+        .modal-overlay.ativo .modal-box, .admin-overlay.ativo .admin-box { transform: translateY(0) scale(1); }
+        
+        .modal-header, .admin-header { padding: 25px 30px; border-bottom: 1px solid var(--cor-borda); display: flex; justify-content: space-between; align-items: center; border-radius: 12px 12px 0 0; }
+        .admin-header { background-color: #0b1320; border-color: var(--cor-borda-admin); }
+        .modal-title { font-family: var(--fonte-titulo); font-size: 1.4rem; color: var(--cor-destaque); display: flex; align-items: center; gap: 10px; }
+        .admin-title { color: #4a90e2; font-family: var(--fonte-texto); display: flex; align-items: center; gap: 10px; font-size: 1.2rem; font-weight: bold; }
+        .btn-fechar { background: transparent; border: none; cursor: pointer; padding: 5px; border-radius: 50%; background-color: var(--cor-bg-terciaria); transition: var(--transicao-rapida); }
+        .btn-fechar svg { width: 20px; height: 20px; fill: var(--cor-texto-claro); }
+        .btn-fechar:hover { background-color: var(--cor-perigo); }
+
+        .modal-body, .admin-body { padding: 20px 30px; overflow-y: auto; flex-grow: 1; }
+        
+        /* Sistema de Login Admin */
+        .admin-login-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 40px; }
+        .admin-login-box { background: #0b1320; padding: 40px; border-radius: 8px; border: 1px solid var(--cor-borda-admin); width: 100%; max-width: 400px; text-align: center; }
+        .admin-input-txt { width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(0,0,0,0.5); border: 1px solid var(--cor-borda-admin); color: #fff; border-radius: 4px; outline: none; transition: border 0.3s; }
+        .admin-input-txt:focus { border-color: #4a90e2; }
+        .admin-login-btn { width: 100%; background: #4a90e2; color: #fff; border: none; padding: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 10px; transition: background 0.3s; }
+        .admin-login-btn:hover { background: #357abd; }
+        #painelConfiguracoes { display: none; }
+
+        /* Elementos Autoatendimento */
+        .passos-container { display: flex; padding: 20px 40px; position: relative; justify-content: space-between; }
+        .passos-linha { position: absolute; top: 35px; left: 60px; right: 60px; height: 2px; background-color: var(--cor-borda); z-index: 1; }
+        .passo-bolinha { width: 32px; height: 32px; border-radius: 50%; background-color: var(--cor-bg-terciaria); border: 2px solid var(--cor-borda); display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--cor-texto-mutado); z-index: 2; position: relative; transition: var(--transicao-suave); }
+        .passo-bolinha.ativo { background-color: var(--cor-destaque); border-color: var(--cor-destaque); color: var(--cor-bg-primaria); }
+        .passo-bolinha.concluido { background-color: var(--cor-sucesso); border-color: var(--cor-sucesso); color: #fff; }
+        .aba-conteudo { display: none; animation: fadeIn 0.3s ease; }
+        .aba-conteudo.ativo { display: block; }
+        .instrucao { text-align: center; font-size: 1.1rem; margin-bottom: 25px; color: var(--cor-texto-claro); }
+        .lista-servicos-modal { display: grid; gap: 15px; }
+        .item-servico-modal { border: 1px solid var(--cor-borda); background-color: var(--cor-bg-terciaria); padding: 15px 20px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: var(--transicao-rapida); }
+        .item-servico-modal:hover { border-color: rgba(212, 175, 55, 0.5); }
+        .item-servico-modal.selecionado { border-color: var(--cor-destaque); background-color: rgba(212, 175, 55, 0.1); }
+        .carrossel-datas { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 25px; }
+        .btn-data { flex: 0 0 100px; padding: 12px 10px; border: 1px solid var(--cor-borda); border-radius: 8px; background-color: var(--cor-bg-terciaria); text-align: center; cursor: pointer; transition: var(--transicao-rapida); }
+        .btn-data.selecionado { border-color: var(--cor-destaque); background-color: rgba(212, 175, 55, 0.1); }
+        .d-semana { font-size: 0.8rem; color: var(--cor-texto-mutado); text-transform: uppercase; display:block; }
+        .d-numero { font-size: 1.6rem; font-weight: 700; margin: 5px 0; color: var(--cor-texto-claro); display:block; }
+        .d-mes { font-size: 0.8rem; color: var(--cor-destaque); display:block; }
+        .grid-horas { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 10px; }
+        .btn-hora { padding: 10px; border: 1px solid var(--cor-borda); background-color: var(--cor-bg-terciaria); color: var(--cor-texto-claro); border-radius: 6px; cursor: pointer; font-weight: 600; transition: var(--transicao-rapida); }
+        .btn-hora:hover:not(:disabled) { border-color: var(--cor-destaque); }
+        .btn-hora.selecionado { background-color: var(--cor-destaque); border-color: var(--cor-destaque); color: var(--cor-bg-primaria); }
+        .btn-hora:disabled { opacity: 0.2; cursor: not-allowed; text-decoration: line-through; }
+        .caixa-resumo { background-color: rgba(255,255,255,0.03); border: 1px dashed var(--cor-destaque); padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .linha-resumo { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .modal-footer { padding: 20px 30px; border-top: 1px solid var(--cor-borda); display: flex; justify-content: space-between; border-radius: 0 0 12px 12px; }
+
+        /* Elementos Tabela Admin */
+        .admin-secao-titulo { font-size: 1.1rem; color: #fff; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--cor-borda-admin); }
+        .admin-table { width: 100%; border-collapse: collapse; margin-bottom: 40px; }
+        .admin-table th, .admin-table td { padding: 15px; text-align: left; border-bottom: 1px solid var(--cor-borda-admin); }
+        .admin-table th { color: var(--cor-texto-mutado); font-weight: 500; font-size: 0.9rem; }
+        .admin-input-preco { background-color: #0b1320; border: 1px solid var(--cor-borda-admin); color: #fff; padding: 8px 12px; border-radius: 4px; width: 100px; font-weight: 600; }
+        .admin-grid-horas { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; }
+        .toggle-hora { background-color: #0b1320; border: 1px solid var(--cor-borda-admin); padding: 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: var(--transicao-rapida); }
+        .toggle-hora.inativo { opacity: 0.5; border-color: var(--cor-perigo); }
+        .toggle-hora.ativo-toggle { border-color: var(--cor-sucesso); }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; background-color: var(--cor-sucesso); }
+        .toggle-hora.inativo .status-dot { background-color: var(--cor-perigo); }
+        .admin-footer { padding: 20px 30px; background-color: #0b1320; border-top: 1px solid var(--cor-borda-admin); display: flex; justify-content: flex-end; gap: 15px; }
+        .btn-salvar { background-color: #4a90e2; color: #fff; border: none; padding: 10px 25px; border-radius: 4px; cursor: pointer; font-weight: 600; transition: background 0.3s; }
+        .btn-salvar:hover { background-color: #357abd; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @media (max-width: 768px) { .grid-servicos, .footer-grid { grid-template-columns: 1fr; } .hero-title { font-size: 2.8rem; } }
+    </style>
+</head>
+<body>
+
+    <!-- ÍCONES -->
+    <svg style="display: none;">
+        <symbol id="icon-scissors" viewBox="0 0 24 24"><path d="M6 18c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm12 0c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zM9 11l-2-2c-1.3-1.3-3.14-1.66-4.83-1.04-1.38.51-2.45 1.66-2.92 3.09C-1.52 13.34 0 16 3 16c1.1 0 2-.9 2-2 0-.25-.05-.48-.13-.7l2.5-2.5L9 11zm15.17-5.04c-1.69-.62-3.53-.26-4.83 1.04l-2 2 1.63 1.7L21.47 8.2c.08-.22.13-.45.13-.7 0-3-1.52-5.66-4.43-5.35-1.43.47-2.58 1.62-3.09 3.09v-.03c-.2.56-.31 1.16-.31 1.79 0 2.21 1.34 4.11 3.25 4.88l-3.32 3.32C9.4 15.35 9 15.66 9 16c0 .55.45 1 1 1s1-.45 1-1c0-.34-.4-.65-.68-.89l3.32-3.32c.77 1.91 2.67 3.25 4.88 3.25.63 0 1.23-.11 1.79-.31v-.03c1.47-.47 2.62-1.62 3.09-3.09.31-2.91-2.35-5.43-5.35-4.43z"/></symbol>
+        <symbol id="icon-beard" viewBox="0 0 24 24"><path d="M12 3c-3.86 0-7 3.14-7 7 0 2.29 1.1 4.31 2.8 5.6C8.75 18.25 10 21.5 10 21.5c.34.82 1.15 1.5 2 1.5s1.66-.68 2-1.5c0 0 1.25-3.25 2.2-5.9 1.7-1.29 2.8-3.31 2.8-5.6 0-3.86-3.14-7-7-7zm0 11c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4 z"/></symbol>
+        <symbol id="icon-combo" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v4h-2zm0 6h2v2h-2z"/></symbol>
+        <symbol id="icon-blade" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></symbol>
+        <symbol id="icon-calendar" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-1.99.9-1.99 2L3 20a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></symbol>
+        <symbol id="icon-check" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></symbol>
+        <symbol id="icon-admin" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></symbol>
+    </svg>
+
+    <!-- HEADER -->
+    <header id="header">
+        <div class="container header-content">
+            <a href="#" class="logo">
+                <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M5 16h14l-1.5-9-3.5 3-2-6-2 6-3.5-3L5 16zm-3 2h20v2H2v-2z"/></svg></div>
+                <div class="logo-text">
+                    <span class="logo-text-main">Imperium</span>
+                    <span class="logo-text-sub">Barbershop</span>
+                </div>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#inicio" class="active">Início</a></li>
+                <li><a href="#servicos">Serviços</a></li>
+                <li><a href="#catalogo">Catálogo</a></li>
+                <li><a href="#rodape">Contato</a></li>
+            </ul>
+            <div class="header-actions">
+                <button class="btn btn-primario" onclick="abrirModalAtendimento()" style="padding: 10px 20px; font-size: 0.85rem;">
+                    <svg style="width:16px;height:16px;fill:var(--cor-texto-escuro);" viewBox="0 0 24 24"><use href="#icon-calendar"></use></svg>
+                    Agendar
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero" id="inicio">
+        <div class="container">
+            <div class="hero-content">
+                <span class="hero-tag">A Verdadeira Barbearia Clássica</span>
+                <h1 class="hero-title">Estilo, Respeito e <span>Qualidade Sempre.</span></h1>
+                <p class="hero-desc">Ambiente climatizado, profissionais experientes e atendimento focado em extrair sua melhor versão.</p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primario" onclick="abrirModalAtendimento()">Agendar Horário</button>
+                    <a href="#catalogo" class="btn btn-secundario">Ver Cortes</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SERVIÇOS -->
+    <section class="secao-padrao bg-secundario" id="servicos">
+        <div class="container">
+            <h2 class="titulo-secao">Nossos <span>Serviços</span></h2>
+            <p class="subtitulo-secao">Cuidado em cada detalhe. Confira nossa tabela de valores dinâmica via banco de dados.</p>
+            <div class="grid-servicos" id="render-servicos-site"></div>
+        </div>
+    </section>
+
+    <!-- CATÁLOGO -->
+    <section class="secao-padrao" id="catalogo">
+        <div class="container">
+            <h2 class="titulo-secao">Catálogo de <span>Cortes</span></h2>
+            <p class="subtitulo-secao">Algumas inspirações para ajudar você a escolher seu próximo visual.</p>
+            <div class="catalogo-grid">
+                <article class="corte-card"><div class="corte-visual">✂</div><div><h3>Low Fade</h3><p>Degradê baixo com acabamento discreto e versátil.</p></div></article>
+                <article class="corte-card"><div class="corte-visual">〰</div><div><h3>Mid Fade</h3><p>Degradê médio para um visual moderno e equilibrado.</p></div></article>
+                <article class="corte-card"><div class="corte-visual">♛</div><div><h3>Social clássico</h3><p>Laterais alinhadas e topo estruturado para um estilo tradicional.</p></div></article>
+                <article class="corte-card"><div class="corte-visual">✦</div><div><h3>Texturizado</h3><p>Textura no topo e acabamento personalizado.</p></div></article>
+            </div>
+        </div>
+    </section>
+
+    <!-- RODAPÉ -->
+    <footer id="rodape">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-sobre">
+                    <span class="logo-text-main">Imperium</span>
+                    <p>Mais do que cortar cabelo, criamos autoestima. Tradição e modernidade em um só lugar.</p>
+                </div>
+                <div class="footer-col">
+                    <h4 class="footer-titulo">Links Úteis</h4>
+                    <ul class="footer-links">
+                        <li><a href="#inicio">Página Inicial</a></li>
+                        <li><a href="#servicos">Nossos Serviços</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="copyright">&copy; 2026 Imperium Barbershop.</div>
+                <a href="#" class="link-admin" onclick="abrirAdmin(); return false;">
+                    <svg style="width:16px;height:16px;fill:currentColor" viewBox="0 0 24 24"><use href="#icon-admin"></use></svg>
+                    Área do Profissional
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- MODAL CLIENTE -->
+    <div class="modal-overlay" id="modalAgendamento">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 class="modal-title"><svg style="width:24px;height:24px;fill:var(--cor-destaque);" viewBox="0 0 24 24"><use href="#icon-calendar"></use></svg> Autoatendimento</h3>
+                <button class="btn-fechar" onclick="fecharModalAtendimento()"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+            </div>
+            <div class="passos-container">
+                <div class="passos-linha"></div>
+                <div class="passo-bolinha ativo" id="passo-bola-1">1</div>
+                <div class="passo-bolinha" id="passo-bola-2">2</div>
+                <div class="passo-bolinha" id="passo-bola-3">3</div>
+            </div>
+            <div class="modal-body">
+                <div class="aba-conteudo ativo" id="aba-1">
+                    <h3 class="instrucao">Qual serviço você deseja realizar?</h3>
+                    <div class="lista-servicos-modal" id="render-servicos-modal"></div>
+                </div>
+                <div class="aba-conteudo" id="aba-2">
+                    <h3 class="instrucao">Selecione o melhor dia e horário</h3>
+                    <div class="carrossel-datas" id="render-datas"></div>
+                    <div class="grid-horas" id="render-horarios"></div>
+                </div>
+                <div class="aba-conteudo" id="aba-3">
+                    <h3 class="instrucao">Confirme seu agendamento</h3>
+                    <div class="caixa-resumo">
+                        <div class="linha-resumo"><span style="color:var(--cor-texto-mutado);">Serviço</span><span style="color:#fff;" id="resumo-servico">-</span></div>
+                        <div class="linha-resumo"><span style="color:var(--cor-texto-mutado);">Data</span><span style="color:#fff;" id="resumo-data">-</span></div>
+                        <div class="linha-resumo"><span style="color:var(--cor-texto-mutado);">Horário</span><span style="color:#fff;" id="resumo-hora">-</span></div>
+                        <div class="linha-resumo"><span style="color:var(--cor-texto-mutado);">Total</span><span style="color:var(--cor-destaque);" id="resumo-preco">R$ 0,00</span></div>
+                    </div>
+                    <label for="clienteNome" class="instrucao" style="display:block;margin-top:18px;">Seus dados para contato</label>
+                    <input id="clienteNome" class="campo-cliente" type="text" maxlength="80" placeholder="Nome completo" autocomplete="name">
+                    <textarea id="clienteObs" class="campo-cliente" maxlength="300" rows="2" placeholder="Observação (opcional)"></textarea>
+                    <p class="notice-box">Seu pedido será registrado como solicitação. Aguarde a confirmação da barbearia.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secundario" id="btn-voltar" style="visibility:hidden;" onclick="voltarPasso()">Voltar</button>
+                <button class="btn btn-primario" id="btn-avancar" onclick="avancarPasso()" style="opacity:0.5; pointer-events:none;">Continuar</button>
+                <button class="btn btn-primario" id="btn-finalizar" style="display:none; background-color:#25D366; color:white;" onclick="enviarWhatsApp()">Confirmar no WhatsApp</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL ADMIN COM LOGIN -->
+    <div class="admin-overlay" id="modalAdmin">
+        <div class="admin-box">
+            <div class="admin-header">
+                <h3 class="admin-title"><svg style="width:20px;height:20px;fill:currentColor" viewBox="0 0 24 24"><use href="#icon-admin"></use></svg> Acesso Profissional</h3>
+                <button class="btn-fechar" onclick="fecharAdmin()"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+            </div>
+            
+            <div class="admin-body" style="padding: 0;">
+                <!-- Tela de Login -->
+                <div class="admin-login-container" id="painelLogin">
+                    <div class="admin-login-box">
+                        <h4 style="color:#fff; margin-bottom:8px; font-size:1.2rem;">Autenticação Administrativa</h4>
+                        <p style="color:#aab4c0;font-size:.85rem;margin:0 0 20px;">A biometria está disponível somente para entrar no painel profissional.</p>
+                        <input type="email" id="adminEmail" class="admin-input-txt" placeholder="E-mail" autocomplete="username">
+                        <input type="password" id="adminSenha" class="admin-input-txt" placeholder="Senha" autocomplete="current-password">
+                        <button class="admin-login-btn" onclick="realizarLogin()">Entrar no Sistema</button>
+                        <button type="button" class="admin-login-btn" id="btnPasskey" onclick="entrarComBiometria()" style="margin-top:10px;background:#171717;color:#d4af37;border:1px solid #d4af37;">🔐 Acesso administrativo com biometria</button>
+                        <p id="msgErroLogin" style="color:var(--cor-perigo); font-size:0.85rem; margin-top:15px; display:none;">Credenciais inválidas. Tente novamente.</p>
+                    </div>
+                </div>
+
+                <!-- Painel de Configurações -->
+                <div id="painelConfiguracoes" style="padding: 30px; height: 100%; overflow-y: auto; display:none;">
+                    <div style="margin-bottom:24px;padding:16px;border:1px solid #d4af37;border-radius:6px;background:#111923;">
+                        <h4 style="color:#d4af37;margin:0 0 8px;">Segurança do acesso administrativo</h4>
+                        <p style="color:#c5cbd3;margin:0 0 12px;font-size:.9rem;">Cadastre uma passkey para entrar neste painel usando a biometria ou o método de desbloqueio compatível do seu aparelho.</p>
+                        <button type="button" id="btnCadastrarPasskey" onclick="cadastrarBiometria()" style="width:100%;padding:12px;background:#171717;color:#d4af37;border:1px solid #d4af37;border-radius:4px;cursor:pointer;">Cadastrar biometria neste aparelho</button>
+                    </div>
+                    <h4 class="admin-secao-titulo">Banco de Dados: Alteração de Preços</h4>
+                    <table class="admin-table">
+                        <thead><tr><th>ID</th><th>Serviço</th><th>Preço Atual (R$)</th></tr></thead>
+                        <tbody id="admin-tabela-servicos"></tbody>
+                    </table>
+                    <h4 class="admin-secao-titulo">Controle de Horários (Disponibilidade)</h4>
+                    <div class="admin-grid-horas" id="admin-tabela-horas"></div>
+                    <div class="admin-actions">
+                        <button class="admin-action-btn" onclick="adicionarServico()">＋ Adicionar serviço</button>
+                        <button class="admin-action-btn" onclick="carregarAgendamentosAdmin()">↻ Atualizar agendamentos</button>
+                        <button class="admin-action-btn" onclick="gerarRelatorioAdmin()">Ver resumo financeiro</button>
+                        <button class="admin-action-btn" onclick="sairAdmin()">Sair da conta</button>
+                    </div>
+                    <h4 class="admin-secao-titulo">Agendamentos recebidos</h4>
+                    <div id="admin-resumo-financeiro" class="notice-box">Resumo financeiro disponível após carregar os pedidos.</div>
+                    <div id="admin-lista-agendamentos" class="admin-list"><p style="color:#aab4c0">Carregue os agendamentos para visualizar os pedidos.</p></div>
+                </div>
+            </div>
+
+            <!-- Rodapé Admin -->
+            <div class="admin-footer" id="rodapeConfiguracoes" style="display: none;">
+                <button class="btn-secundario btn" style="border:1px solid #fff; color:#fff;" onclick="fecharAdmin()">Cancelar</button>
+                <button class="btn-salvar" onclick="salvarConfiguracoesNoBanco()">Atualizar Banco de Dados</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <!-- JAVASCRIPT -->
+    <script>
+        const NUMERO_WHATS = "5586981233521";
+        const firebaseConfig = { apiKey:"AIzaSyCdaNbon_H3DKoO2gxfLPM0wedno4zF_-U", authDomain:"barberia-modelo-simples.firebaseapp.com", projectId:"barberia-modelo-simples", storageBucket:"barberia-modelo-simples.firebasestorage.app", messagingSenderId:"57843021038", appId:"1:57843021038:web:b5535cad635d96d330efff", measurementId:"G-NWM5KHS2VW" };
+        let firebasePronto=false, auth=null, firestore=null, configRef=null;
+        try { if(!firebase.apps.length) firebase.initializeApp(firebaseConfig); auth=firebase.auth(); firestore=firebase.firestore(); configRef=firestore.collection("configuracoes").doc("geral"); firebasePronto=true; } catch(e) { console.error("Firebase:",e); }
+ 
+        
+        const serviçosDefault = [
+            { id: 1, nome: "Corte Masculino", desc: "Corte na tesoura/máquina + Acabamento", preco: 30.00, icon: "icon-scissors" },
+            { id: 2, nome: "Barba Terapia", desc: "Modelagem, alinhamento, toalha quente e balm", preco: 20.00, icon: "icon-beard" },
+            { id: 3, nome: "O Imperium (Combo)", desc: "Cabelo e barba alinhados", preco: 45.00, icon: "icon-combo" },
+            { id: 4, nome: "Sobrancelha", desc: "Design e alinhamento na navalha", preco: 15.00, icon: "icon-blade" },
+            { id: 5, nome: "Corte Feminino", desc: "Corte e acabamento para cabelos femininos", preco: 35.00, icon: "icon-scissors" },
+            { id: 6, nome: "Hidratação Capilar", desc: "Tratamento hidratante para os fios", preco: 30.00, icon: "icon-combo" },
+            { id: 7, nome: "Escova", desc: "Finalização e modelagem dos cabelos", preco: 25.00, icon: "icon-scissors" },
+            { id: 8, nome: "Corte + Hidratação", desc: "Corte feminino combinado com hidratação capilar", preco: 55.00, icon: "icon-combo" }
+        ];
+        const horasDefault = [
+            { hora: "09:00", ativo: true }, { hora: "10:00", ativo: true }, { hora: "11:00", ativo: true },
+            { hora: "14:00", ativo: true }, { hora: "15:00", ativo: true }, { hora: "16:00", ativo: true }
+        ];
+
+        let dbServicos = [];
+        let dbHoras = [];
+        let agendamento = { servicoObj: null, dataTexto: null, dataISO: null, horaTexto: null, clienteNome: "", observacao: "" };
+        let passoAtual = 1;
+
+        const FirebaseDatabaseAPI = {
+            async fetchConfig() {
+                if (!firebasePronto) throw new Error("Firebase indisponível.");
+                const snapshot = await configRef.get();
+                if (!snapshot.exists) return { servicos: serviçosDefault, horas: horasDefault };
+                const dados = snapshot.data() || {};
+                const servicosSalvos = Array.isArray(dados.servicos)
+                    ? dados.servicos.filter(s => s && typeof s === "object" && String(s.nome || "").trim())
+                    : [];
+                // Mantém personalizações, mas garante que todos os serviços padrão existam.
+                const nomesExistentes = new Set(servicosSalvos.map(s => String(s.nome).trim().toLowerCase()));
+                const servicosCompletos = [
+                    ...servicosSalvos,
+                    ...serviçosDefault.filter(s => !nomesExistentes.has(s.nome.trim().toLowerCase()))
+                ];
+                return {
+                    servicos: servicosCompletos.length ? servicosCompletos : [...serviçosDefault],
+                    horas: Array.isArray(dados.horas) && dados.horas.length ? dados.horas : [...horasDefault]
+                };
+            },
+            async saveConfig(novosServicos, novasHoras) {
+                if (!firebasePronto) throw new Error("Firebase indisponível.");
+                await configRef.set({
+                    servicos: novosServicos,
+                    horas: novasHoras,
+                    atualizadoEm: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+                return { status: 200 };
+            },
+            async salvarAgendamento(dados) {
+                if (!firebasePronto) throw new Error("Firebase indisponível.");
+                // ID determinístico: dois pedidos para o mesmo dia/horário disputam o mesmo documento.
+                // A regra Firestore deve permitir create e negar sobrescrita a visitantes.
+                const slotId = `${dados.dataISO}_${dados.horario}`;
+                const ref = firestore.collection("agendamentos").doc(slotId);
+                // set() sem leitura prévia: documento com o mesmo dia/horário não pode ser sobrescrito
+                // pelas regras (create público, update reservado ao administrador).
+                await ref.set({ ...dados, criadoEm: firebase.firestore.FieldValue.serverTimestamp(), status: "solicitado" });
+                return ref;
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Renderiza imediatamente os valores padrão para que a interface não
+            // fique vazia enquanto o Firestore responde ou falha.
+            dbServicos = [...serviçosDefault];
+            dbHoras = [...horasDefault];
+            renderizarInterfaceGeral();
+
+            try {
+                const dados = await Promise.race([
+                    FirebaseDatabaseAPI.fetchConfig(),
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('Tempo esgotado ao consultar configurações')), 8000))
+                ]);
+                if (Array.isArray(dados.servicos) && dados.servicos.length) dbServicos = dados.servicos;
+                if (Array.isArray(dados.horas) && dados.horas.length) dbHoras = dados.horas;
+                renderizarInterfaceGeral();
+            } catch (error) {
+                console.error("Falha ao carregar Firestore; mantendo serviços e horários padrão:", error);
+                // Mantém a interface funcional com os dados locais.
+            }
+        });
+
+        function renderizarInterfaceGeral() {
+            renderizarServicosSite();
+            renderizarServicosModal();
+            renderizarDatasModal();
+            renderizarHorasModal();
+        }
+
+        function renderizarServicosSite() {
+            const container = document.getElementById('render-servicos-site');
+            container.innerHTML = '';
+            (Array.isArray(dbServicos) && dbServicos.length ? dbServicos : serviçosDefault).forEach(serv => {
+                container.innerHTML += `
+                    <div class="card-servico">
+                        <div class="icone-servico-wrapper"><svg viewBox="0 0 24 24"><use href="#${serv.icon}"></use></svg></div>
+                        <h3>${serv.nome}</h3>
+                        <p>${serv.desc}</p>
+                        <div class="preco-box">
+                            <span>Investimento</span>
+                            <div class="preco-valor">R$ ${parseFloat(serv.preco).toFixed(2).replace('.', ',')}</div>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function abrirModalAtendimento() { document.getElementById('modalAgendamento').classList.add('ativo'); document.body.style.overflow = 'hidden'; resetarModalCliente(); }
+        function fecharModalAtendimento() { document.getElementById('modalAgendamento').classList.remove('ativo'); document.body.style.overflow = 'auto'; }
+        
+        function resetarModalCliente() {
+            passoAtual = 1; agendamento = { servicoObj: null, dataTexto: null, dataISO: null, horaTexto: null, clienteNome: "", observacao: "" };
+            document.querySelectorAll('.item-servico-modal').forEach(e => e.classList.remove('selecionado'));
+            document.querySelectorAll('.btn-hora').forEach(e => e.classList.remove('selecionado'));
+            atualizarUIModal();
+        }
+
+        function renderizarServicosModal() {
+            const c = document.getElementById('render-servicos-modal'); c.innerHTML = '';
+            (Array.isArray(dbServicos) && dbServicos.length ? dbServicos : serviçosDefault).forEach(serv => {
+                const div = document.createElement('div'); div.className = 'item-servico-modal';
+                div.innerHTML = `<div><h4>${serv.nome}</h4><p style="font-size:0.85rem; color:#999">${serv.desc}</p></div>
+                                 <div style="font-weight:700; color:#d4af37; font-size:1.2rem;">R$ ${parseFloat(serv.preco).toFixed(2).replace('.', ',')}</div>`;
+                div.onclick = () => { document.querySelectorAll('.item-servico-modal').forEach(e => e.classList.remove('selecionado')); div.classList.add('selecionado'); agendamento.servicoObj = serv; validarBotaoAvancar(); };
+                c.appendChild(div);
+            });
+        }
+
+        function renderizarDatasModal() {
+            const c = document.getElementById('render-datas'); c.innerHTML = '';
+            const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+            const diasS = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+            const hoje = new Date(); hoje.setHours(0,0,0,0);
+            let primeiro = true;
+            for (let i = 0, adicionados = 0; i < 45 && adicionados < 30; i++) {
+                const data = new Date(hoje); data.setDate(hoje.getDate() + i);
+                if (data.getDay() === 0) continue; // Domingo permanece fechado nesta versão.
+                adicionados++;
+                const iso = `${data.getFullYear()}-${String(data.getMonth()+1).padStart(2,'0')}-${String(data.getDate()).padStart(2,'0')}`;
+                let label = diasS[data.getDay()]; if (i === 0) label = 'Hoje'; if (i === 1) label = 'Amanhã';
+                const btn = document.createElement('button'); btn.type='button'; btn.className='btn-data';
+                if (primeiro) { btn.classList.add('selecionado'); agendamento.dataTexto=`${label}, ${String(data.getDate()).padStart(2,'0')} ${meses[data.getMonth()]}`; agendamento.dataISO=iso; primeiro=false; }
+                btn.innerHTML=`<span class="d-semana">${label}</span><span class="d-numero">${String(data.getDate()).padStart(2,'0')}</span><span class="d-mes">${meses[data.getMonth()]}</span>`;
+                btn.onclick=()=>{ document.querySelectorAll('.btn-data').forEach(e=>e.classList.remove('selecionado')); btn.classList.add('selecionado'); agendamento.dataTexto=`${label}, ${String(data.getDate()).padStart(2,'0')} ${meses[data.getMonth()]}`; agendamento.dataISO=iso; agendamento.horaTexto=null; document.querySelectorAll('.btn-hora').forEach(e=>e.classList.remove('selecionado')); validarBotaoAvancar(); };
+                c.appendChild(btn);
+            }
+        }
+
+        function renderizarHorasModal() {
+            const c = document.getElementById('render-horarios'); c.innerHTML = '';
+            dbHoras.forEach(h => {
+                const btn = document.createElement('button'); btn.className = 'btn-hora'; btn.innerText = h.hora;
+                if(!h.ativo) { btn.disabled = true; }
+                btn.onclick = () => { if(!agendamento.dataTexto) return; document.querySelectorAll('.btn-hora').forEach(e => e.classList.remove('selecionado')); btn.classList.add('selecionado'); agendamento.horaTexto = h.hora; validarBotaoAvancar(); };
+                c.appendChild(btn);
+            });
+        }
+
+        function avancarPasso() { if(passoAtual === 2 && (!agendamento.dataISO || !agendamento.horaTexto)){ alert("Selecione a data e o horário."); return; } if(passoAtual < 3){ passoAtual++; atualizarUIModal(); } }
+        function voltarPasso() { if(passoAtual > 1){ passoAtual--; atualizarUIModal(); } }
+        function validarBotaoAvancar() {
+            const btn = document.getElementById('btn-avancar');
+            if (passoAtual === 1 && agendamento.servicoObj) { btn.style.opacity = '1'; btn.style.pointerEvents = 'auto'; }
+            else if (passoAtual === 2 && agendamento.dataTexto && agendamento.horaTexto) { btn.style.opacity = '1'; btn.style.pointerEvents = 'auto'; }
+            else { btn.style.opacity = '0.5'; btn.style.pointerEvents = 'none'; }
+        }
+
+        function atualizarUIModal() {
+            [1,2,3].forEach(i => document.getElementById(`aba-${i}`).classList.remove('ativo'));
+            document.getElementById(`aba-${passoAtual}`).classList.add('ativo');
+            [1,2,3].forEach(i => {
+                const b = document.getElementById(`passo-bola-${i}`);
+                if (i < passoAtual) { b.className = 'passo-bolinha concluido'; b.innerHTML = '<svg style="width:16px;height:16px;fill:#fff;" viewBox="0 0 24 24"><use href="#icon-check"></use></svg>'; }
+                else if (i === passoAtual) { b.className = 'passo-bolinha ativo'; b.innerHTML = i; }
+                else { b.className = 'passo-bolinha'; b.innerHTML = i; }
+            });
+            const v = document.getElementById('btn-voltar'), a = document.getElementById('btn-avancar'), f = document.getElementById('btn-finalizar');
+            if (passoAtual === 1) { v.style.visibility = 'hidden'; a.style.display = 'block'; f.style.display = 'none'; }
+            else if (passoAtual === 2) { v.style.visibility = 'visible'; a.style.display = 'block'; f.style.display = 'none'; }
+            else if (passoAtual === 3) {
+                v.style.visibility = 'visible'; a.style.display = 'none'; f.style.display = 'inline-flex';
+                document.getElementById('resumo-servico').innerText = agendamento.servicoObj.nome; document.getElementById('resumo-data').innerText = agendamento.dataTexto; document.getElementById('resumo-hora').innerText = agendamento.horaTexto; document.getElementById('resumo-preco').innerText = `R$ ${parseFloat(agendamento.servicoObj.preco).toFixed(2).replace('.', ',')}`;
+            }
+            validarBotaoAvancar();
+        }
+
+        async function enviarWhatsApp() {
+            const nome = document.getElementById('clienteNome').value.trim();
+            const observacao = document.getElementById('clienteObs').value.trim();
+            if (!agendamento.servicoObj || !agendamento.dataISO || !agendamento.horaTexto) { alert("Selecione o serviço, a data e o horário."); return; }
+            if (nome.length < 2) { alert("Informe seu nome completo."); return; }
+            const servico=agendamento.servicoObj, valor=Number(servico.preco);
+            const dados={servicoId:Number(servico.id),servico:String(servico.nome),data:agendamento.dataTexto,dataISO:agendamento.dataISO,horario:agendamento.horaTexto,valor,clienteNome:nome,observacao};
+            const texto=`Olá! Quero solicitar um agendamento no Imperium Barbershop:\n✂️ Serviço: ${dados.servico}\n📅 Data: ${dados.data}\n⏰ Horário: ${dados.horario}\n💰 Valor: R$ ${valor.toFixed(2).replace('.',',')}\n👤 Cliente: ${nome}${observacao?`\n📝 Observação: ${observacao}`:''}\n\nAguardo a confirmação.`;
+            const numeroWhats=String(NUMERO_WHATS||'').replace(/\D/g,'');
+            if(!numeroWhats){alert('O número do WhatsApp da barbearia não está configurado.');return;}
+            const destino=`https://wa.me/${numeroWhats}?text=${encodeURIComponent(texto)}`;
+
+            // Abre uma aba vazia durante o clique para evitar bloqueio de pop-up,
+            // mas só direciona ao WhatsApp depois que o pedido for salvo no Firestore.
+            let janela=null;
+            try { janela=window.open('about:blank','_blank'); if(janela) janela.opener=null; } catch(e) { console.warn(e); }
+            try {
+                await FirebaseDatabaseAPI.salvarAgendamento(dados);
+                alert('Solicitação registrada! Envie a mensagem no WhatsApp e aguarde a confirmação da barbearia.');
+                fecharModalAtendimento();
+                if(janela) janela.location.href=destino;
+                else window.location.href=destino;
+            } catch(erro) {
+                if(janela) janela.close();
+                console.error('Falha ao registrar pedido:',erro);
+                alert((erro.message || 'Não foi possível registrar no banco.') + '\nO pedido não foi registrado; verifique sua conexão e as regras do Firestore.');
+            }
+        }
+
+        // WebAuthn/passkeys: exige HTTPS e endpoints de servidor para criar/verificar desafios.
+        // Configure WEBAUTHN_API_BASE com a URL HTTPS da API Firebase Functions antes de ativar.
+        const WEBAUTHN_API_BASE = ""; // Ex.: https://REGIAO-PROJETO.cloudfunctions.net/webauthn
+
+        function mostrarErroBiometria(texto) {
+            const mensagem = document.getElementById('msgErroLogin');
+            mensagem.textContent = texto;
+            mensagem.style.display = 'block';
+        }
+
+        function base64urlParaBuffer(valor) {
+            const base64 = valor.replace(/-/g, '+').replace(/_/g, '/');
+            const bin = atob(base64 + '='.repeat((4 - base64.length % 4) % 4));
+            return Uint8Array.from(bin, c => c.charCodeAt(0));
+        }
+
+        function bufferParaBase64url(buffer) {
+            return btoa(String.fromCharCode(...new Uint8Array(buffer)))
+                .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+        }
+
+        function prepararPublicKey(options) {
+            if (options.challenge) options.challenge = base64urlParaBuffer(options.challenge);
+            if (options.user && options.user.id) options.user.id = base64urlParaBuffer(options.user.id);
+            if (options.allowCredentials) options.allowCredentials = options.allowCredentials.map(c => ({...c, id: base64urlParaBuffer(c.id)}));
+            if (options.excludeCredentials) options.excludeCredentials = options.excludeCredentials.map(c => ({...c, id: base64urlParaBuffer(c.id)}));
+            return options;
+        }
+
+        function serializarCredencial(cred) {
+            const resposta = cred.response;
+            const dados = {
+                id: cred.id, rawId: bufferParaBase64url(cred.rawId), type: cred.type,
+                response: {
+                    clientDataJSON: bufferParaBase64url(resposta.clientDataJSON),
+                    authenticatorData: resposta.authenticatorData ? bufferParaBase64url(resposta.authenticatorData) : undefined,
+                    attestationObject: resposta.attestationObject ? bufferParaBase64url(resposta.attestationObject) : undefined,
+                    signature: resposta.signature ? bufferParaBase64url(resposta.signature) : undefined,
+                    userHandle: resposta.userHandle ? bufferParaBase64url(resposta.userHandle) : undefined
+                }
+            };
+            if (cred.getClientExtensionResults) dados.clientExtensionResults = cred.getClientExtensionResults();
+            return dados;
+        }
+
+        async function chamarWebAuthn(endpoint, corpo) {
+            const resposta = await fetch(`${WEBAUTHN_API_BASE}/${endpoint}`, {
+                method: 'POST', headers: {'Content-Type':'application/json'},
+                body: JSON.stringify(corpo || {})
+            });
+            const json = await resposta.json().catch(() => ({}));
+            if (!resposta.ok) throw new Error(json.message || json.error || 'Falha na autenticação biométrica.');
+            return json;
+        }
+
+        async function entrarComBiometria() {
+            const email = document.getElementById('adminEmail').value.trim();
+            const botao = document.getElementById('btnPasskey');
+            document.getElementById('msgErroLogin').style.display = 'none';
+            if (!WEBAUTHN_API_BASE) {
+                mostrarErroBiometria('A biometria ainda precisa ser configurada no servidor WebAuthn. Use o login por e-mail e senha até concluir essa configuração.');
+                return;
+            }
+            if (!window.isSecureContext || !navigator.credentials || !window.PublicKeyCredential) {
+                mostrarErroBiometria('Este navegador não oferece suporte à biometria/passkeys neste contexto. Acesse o site por HTTPS em um aparelho compatível.');
+                return;
+            }
+            if (!email) { mostrarErroBiometria('Informe seu e-mail antes de entrar com biometria.'); return; }
+            botao.disabled = true; botao.textContent = 'Aguardando autenticação…';
+            try {
+                const inicio = await chamarWebAuthn('authentication/options', {email});
+                const credencial = await navigator.credentials.get({publicKey: prepararPublicKey(inicio.options || inicio)});
+                const validacao = await chamarWebAuthn('authentication/verify', {email, challengeId: inicio.challengeId, credential: serializarCredencial(credencial)});
+                if (!validacao.customToken) throw new Error('O servidor não retornou o token de acesso.');
+                await auth.signInWithCustomToken(validacao.customToken);
+                isAdminLogado = true;
+                document.getElementById('painelLogin').style.display = 'none';
+                document.getElementById('painelConfiguracoes').style.display = 'block';
+                document.getElementById('rodapeConfiguracoes').style.display = 'flex';
+                prepararPainelAdmin();
+                carregarAgendamentosAdmin();
+            } catch (erro) {
+                console.error('Erro WebAuthn:', erro);
+                mostrarErroBiometria(erro.message || 'Não foi possível autenticar com biometria.');
+            } finally { botao.disabled = false; botao.textContent = '🔐 Acesso administrativo com biometria'; }
+        }
+
+        async function cadastrarBiometria() {
+            if (!WEBAUTHN_API_BASE || !auth || !auth.currentUser) {
+                mostrarErroBiometria('Entre primeiro com e-mail e senha. A configuração WebAuthn do servidor também precisa estar ativa.');
+                return;
+            }
+            if (!window.isSecureContext || !navigator.credentials || !window.PublicKeyCredential) {
+                mostrarErroBiometria('Biometria/passkeys requer HTTPS e um navegador compatível.'); return;
+            }
+            try {
+                const inicio = await chamarWebAuthn('registration/options', {idToken: await auth.currentUser.getIdToken()});
+                const credencial = await navigator.credentials.create({publicKey: prepararPublicKey(inicio.options || inicio)});
+                await chamarWebAuthn('registration/verify', {idToken: await auth.currentUser.getIdToken(), challengeId: inicio.challengeId, credential: serializarCredencial(credencial)});
+                alert('Biometria cadastrada neste aparelho.');
+            } catch (erro) {
+                console.error('Erro ao cadastrar WebAuthn:', erro);
+                mostrarErroBiometria(erro.message || 'Não foi possível cadastrar a biometria.');
+            }
+        }
+
+        let isAdminLogado = false;
+        let tempServicos = []; let tempHoras = [];
+
+        function abrirAdmin() {
+            document.getElementById('modalAdmin').classList.add('ativo');
+            document.body.style.overflow = 'hidden';
+            if(!isAdminLogado) {
+                document.getElementById('painelLogin').style.display = 'flex';
+                document.getElementById('painelConfiguracoes').style.display = 'none';
+                document.getElementById('rodapeConfiguracoes').style.display = 'none';
+            } else {
+                prepararPainelAdmin();
+                carregarAgendamentosAdmin();
+            }
+        }
+
+        function fecharAdmin() {
+            document.getElementById('modalAdmin').classList.remove('ativo');
+            document.body.style.overflow = 'auto';
+            document.getElementById('msgErroLogin').style.display = 'none';
+        }
+
+        async function realizarLogin() {
+            const email = document.getElementById('adminEmail').value.trim();
+            const senha = document.getElementById('adminSenha').value;
+            const mensagem = document.getElementById('msgErroLogin');
+            const botao = document.querySelector('.admin-login-btn');
+            mensagem.style.display = 'none';
+            if (!firebasePronto) {
+                mensagem.textContent = "Firebase indisponível. Confira a configuração do projeto.";
+                mensagem.style.display = 'block';
+                return;
+            }
+            if (!email || !senha) {
+                mensagem.textContent = "Informe seu e-mail e sua senha para continuar.";
+                mensagem.style.display = 'block';
+                return;
+            }
+
+            botao.disabled = true;
+            botao.textContent = "Autenticando...";
+            // Evita que a interface fique presa indefinidamente se a rede/Firebase não responder.
+            let temporizador;
+            try {
+                const loginFirebase = auth.signInWithEmailAndPassword(email, senha);
+                await Promise.race([
+                    loginFirebase,
+                    new Promise((_, rejeitar) => {
+                        temporizador = setTimeout(() => rejeitar(new Error('O Firebase não respondeu em 15 segundos. Se sua internet está funcionando, confira se o site está publicado em HTTPS e se o Firebase Authentication está habilitado.')), 15000);
+                    })
+                ]);
+                isAdminLogado = true;
+                document.getElementById('painelLogin').style.display = 'none';
+                document.getElementById('painelConfiguracoes').style.display = 'block';
+                document.getElementById('rodapeConfiguracoes').style.display = 'flex';
+                prepararPainelAdmin();
+            } catch (erro) {
+                console.error("Falha no login:", erro);
+                const codigo = erro && erro.code;
+                if (codigo === 'auth/invalid-credential' || codigo === 'auth/wrong-password' || codigo === 'auth/user-not-found') {
+                    mensagem.textContent = "E-mail ou senha incorretos. Confira os dados e tente novamente.";
+                } else if (codigo === 'auth/too-many-requests') {
+                    mensagem.textContent = "Muitas tentativas. Aguarde um pouco antes de tentar novamente.";
+                } else if (codigo === 'auth/network-request-failed') {
+                    mensagem.textContent = "Não foi possível conectar ao login do Firebase. Sua internet pode estar normal: abra o site por HTTPS (não como arquivo local) e confira no Firebase Console se Authentication está ativado e se o domínio do site está em Authorized domains.";
+                } else {
+                    mensagem.textContent = erro.message || "Não foi possível entrar. Verifique a conexão e as configurações do Firebase.";
+                }
+                mensagem.style.display = 'block';
+            } finally {
+                clearTimeout(temporizador);
+                botao.disabled = false;
+                botao.textContent = "Entrar no Sistema";
+            }
+        }
+
+        function prepararPainelAdmin() {
+            tempServicos = JSON.parse(JSON.stringify(dbServicos));
+            tempHoras = JSON.parse(JSON.stringify(dbHoras));
+
+            const tabS = document.getElementById('admin-tabela-servicos'); tabS.innerHTML = '';
+            tempServicos.forEach((s, i) => {
+                tabS.innerHTML += `<tr><td style="color:#666;">#00${s.id}</td><td style="color:#fff;">${s.nome}</td>
+                <td><input type="number" class="admin-input-preco" value="${s.preco}" onchange="tempServicos[${i}].preco = parseFloat(this.value)||0" step="0.50"></td></tr>`;
+            });
+            renderizarGridAdminHoras();
+        }
+
+        function renderizarGridAdminHoras() {
+            const hC = document.getElementById('admin-tabela-horas'); hC.innerHTML = '';
+            tempHoras.forEach((h, i) => {
+                const d = document.createElement('div'); d.className = `toggle-hora ${h.ativo ? 'ativo-toggle' : 'inativo'}`;
+                d.innerHTML = `<span style="color:#fff;">${h.hora}</span><div class="status-dot"></div>`;
+                d.onclick = () => { tempHoras[i].ativo = !tempHoras[i].ativo; renderizarGridAdminHoras(); };
+                hC.appendChild(d);
+            });
+        }
+
+        async function salvarConfiguracoesNoBanco() {
+            const btn = document.querySelector('.btn-salvar');
+            btn.innerText = "Sincronizando com Servidor...";
+            btn.style.opacity = "0.7";
+            
+            try {
+                await FirebaseDatabaseAPI.saveConfig(tempServicos, tempHoras);
+                dbServicos = JSON.parse(JSON.stringify(tempServicos));
+                dbHoras = JSON.parse(JSON.stringify(tempHoras));
+                renderizarInterfaceGeral();
+                alert("Configurações salvas no Firestore.");
+                fecharAdmin();
+            } catch (erro) {
+                console.error(erro);
+                alert("Falha ao salvar. Confira conexão e regras de segurança do Firestore.");
+            } finally {
+                btn.innerText = "Atualizar Banco de Dados";
+                btn.style.opacity = "1";
+            }
+        }
+        async function carregarAgendamentosAdmin() {
+            const lista=document.getElementById('admin-lista-agendamentos');
+            lista.innerHTML='<p style="color:#aab4c0">Carregando pedidos...</p>';
+            try {
+                if(!auth.currentUser) throw new Error('Entre como administrador para visualizar os pedidos.');
+                const snap=await firestore.collection('agendamentos').orderBy('criadoEm','desc').limit(100).get();
+                window._pedidosAdmin=snap.docs.map(d=>({id:d.id,...d.data()}));
+                if(!window._pedidosAdmin.length){lista.innerHTML='<p style="color:#aab4c0">Nenhum agendamento encontrado.</p>';return;}
+                lista.innerHTML='';
+                window._pedidosAdmin.forEach(p=>{
+                    const card=document.createElement('article'); card.className='admin-booking';
+                    const info=document.createElement('div');
+                    const safe=(v)=>String(v??'—');
+                    info.innerHTML=`<strong style="color:#d4af37">${safe(p.clienteNome)}</strong><p>${safe(p.servico)} · ${safe(p.data)} · ${safe(p.horario)}</p><p>R$ ${Number(p.valor||0).toFixed(2).replace('.',',')}</p><p>Situação: <b>${safe(p.status)}</b>${p.observacao?`<br>Obs.: ${safe(p.observacao)}`:''}</p>`;
+                    const controles=document.createElement('div');
+                    const select=document.createElement('select');
+                    ['solicitado','confirmado','concluido','cancelado'].forEach(st=>{const op=document.createElement('option');op.value=st;op.textContent=st[0].toUpperCase()+st.slice(1);if(p.status===st)op.selected=true;select.appendChild(op);});
+                    select.onchange=()=>atualizarStatusAgendamento(p.id,select.value);
+                    controles.appendChild(select); card.append(info,controles); lista.appendChild(card);
+                });
+                gerarRelatorioAdmin();
+            } catch(e){console.error(e);lista.innerHTML=`<p style="color:#e74c3c">${e.message||'Erro ao carregar. Confira as regras do Firestore.'}</p>`;}
+        }
+
+        async function atualizarStatusAgendamento(id,status) {
+            try { await firestore.collection('agendamentos').doc(id).update({status, atualizadoEm:firebase.firestore.FieldValue.serverTimestamp()}); alert('Situação atualizada.'); await carregarAgendamentosAdmin(); }
+            catch(e){console.error(e);alert('Não foi possível atualizar. Confira as regras administrativas do Firestore.');}
+        }
+
+        function gerarRelatorioAdmin() {
+            const pedidos=window._pedidosAdmin||[];
+            const concluidos=pedidos.filter(p=>p.status==='concluido');
+            const total=concluidos.reduce((s,p)=>s+Number(p.valor||0),0);
+            const pendentes=pedidos.filter(p=>p.status==='solicitado').length;
+            const resumo=document.getElementById('admin-resumo-financeiro');
+            if(resumo) resumo.textContent=`Últimos ${pedidos.length} pedidos carregados · ${pendentes} solicitações pendentes · ${concluidos.length} atendimentos concluídos · Receita registrada: R$ ${total.toFixed(2).replace('.',',')}. Valores calculados somente sobre os últimos 100 pedidos carregados.`;
+        }
+
+        async function adicionarServico() {
+            const nome=prompt('Nome do novo serviço:'); if(!nome||!nome.trim()) return;
+            const precoRaw=prompt('Preço em reais (ex.: 35,00):'); if(precoRaw===null)return;
+            const preco=Number(precoRaw.replace(',','.'));
+            if(!Number.isFinite(preco)||preco<0){alert('Informe um preço válido.');return;}
+            const id=Math.max(0,...tempServicos.map(s=>Number(s.id)||0))+1;
+            tempServicos.push({id,nome:nome.trim(),desc:'Serviço personalizado',preco,icon:'icon-scissors'});
+            prepararPainelAdmin();
+            alert('Serviço adicionado à edição. Toque em “Atualizar Banco de Dados” para gravar.');
+        }
+
+        async function sairAdmin(){
+            try{if(auth)await auth.signOut();}catch(e){console.warn(e);}
+            isAdminLogado=false;
+            document.getElementById('painelLogin').style.display='flex';
+            document.getElementById('painelConfiguracoes').style.display='none';
+            document.getElementById('rodapeConfiguracoes').style.display='none';
+            document.getElementById('adminSenha').value='';
+        }
+
+    </script>
+</body>
+</html>
